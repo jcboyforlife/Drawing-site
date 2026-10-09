@@ -1,0 +1,566 @@
+/* ==========================================================================
+   DESIGN TOKENS
+   Keeping every color, spacing, and radius value in one place (CSS custom
+   properties) means the whole app's look can be changed by editing this
+   one block — nothing else in the file needs to know a hex code.
+   ========================================================================== */
+:root {
+  /* --- Color palette --- */
+  --bg-app: #f4f5f8;          /* cool light-gray page background */
+  --bg-panel: #ffffff;        /* white cards: toolbar, settings, canvas */
+  --bg-canvas: #ffffff;       /* the "paper" itself */
+  --border-color: #e4e4ea;
+
+  --text-primary: #1f2430;    /* near-black ink for headings/body */
+  --text-secondary: #6b7280;  /* muted gray for labels/captions */
+
+  --accent: #5b5fef;          /* signature indigo-violet accent */
+  --accent-soft: #eef0ff;     /* pale accent for hover/active backgrounds */
+  --accent-hover: #4a4ee0;
+
+  --danger: #ef4444;
+  --danger-soft: #fdecec;
+
+  /* --- Spacing scale (multiples of 4px) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* --- Shape & shadow --- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-soft: 0 2px 8px rgba(31, 36, 48, 0.06), 0 8px 24px rgba(31, 36, 48, 0.06);
+  --shadow-canvas: 0 4px 16px rgba(31, 36, 48, 0.08), 0 16px 40px rgba(31, 36, 48, 0.08);
+
+  /* --- Layout widths --- */
+  --toolbar-width: 88px;
+  --settings-width: 260px;
+  --header-height: 72px;
+}
+
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* Respect users who've asked their OS to reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Visible keyboard focus for accessibility — never remove focus outlines
+   without replacing them with something equally visible. */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   APP SHELL — a full-height column: header / body / footer
+   ========================================================================== */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.app-header {
+  height: var(--header-height);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+}
+
+.brand-text h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.brand-text p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Small pill-shaped buttons used for Undo/Redo in the header */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.icon-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.icon-btn:disabled {
+  color: #c7c9d1;
+  cursor: not-allowed;
+}
+
+/* On very small screens, hide the text label and keep just the icon */
+@media (max-width: 480px) {
+  .icon-btn span {
+    display: none;
+  }
+  .brand-text p {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   APP BODY — the three-column layout: toolbar | canvas | settings
+   ========================================================================== */
+.app-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--toolbar-width) 1fr var(--settings-width);
+  gap: var(--space-4);
+  padding: var(--space-4);
+  min-height: 0; /* allows children to scroll/shrink properly inside a grid */
+}
+
+/* ==========================================================================
+   LEFT TOOLBAR
+   ========================================================================== */
+.toolbar {
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-4) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.tool-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tool-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* The currently-selected tool (pencil or eraser) gets the accent treatment */
+.tool-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+.toolbar-divider {
+  width: 70%;
+  height: 1px;
+  background: var(--border-color);
+  margin: var(--space-2) 0;
+}
+
+.brush-mini {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.brush-mini label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   CANVAS AREA
+   ========================================================================== */
+.canvas-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The "paper card": this is the signature visual element — a floating
+   white sheet with soft layered shadows, distinct from the cool-gray page. */
+.canvas-card {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-canvas);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-canvas);
+  padding: var(--space-2);
+  display: flex;
+}
+
+#drawingCanvas {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  /* A crosshair cursor communicates "this is drawable" without extra UI */
+  cursor: crosshair;
+  touch-action: none; /* prevents the page from scrolling while drawing on touch */
+  background: #ffffff;
+}
+
+/* ==========================================================================
+   RIGHT SETTINGS PANEL
+   ========================================================================== */
+.settings-panel {
+  background: var(--bg-panel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-5) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  overflow-y: auto;
+}
+
+.panel-section h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* Color swatches: a small grid of preset circles */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.swatch:hover {
+  transform: scale(1.12);
+}
+
+.swatch.active {
+  border-color: var(--text-primary);
+}
+
+.custom-color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* Native color input, restyled to look like a small rounded chip */
+#colorPicker {
+  width: 40px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.brush-size-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brush-size-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 34px;
+  text-align: right;
+}
+
+/* Range sliders, restyled consistently across the app */
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-color);
+  outline-offset: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  border: none;
+}
+
+.brush-preview-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  margin-top: var(--space-3);
+  background: var(--bg-app);
+  border-radius: var(--radius-sm);
+}
+
+/* This dot visually mirrors the exact size/color the next stroke will be */
+.brush-preview {
+  border-radius: 50%;
+  background: var(--accent);
+  transition: width 0.1s ease, height 0.1s ease;
+}
+
+.panel-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.btn {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #fbdada;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.app-footer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: var(--space-3);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   RESPONSIVE — TABLET
+   Settings panel drops below the canvas and spans full width; toolbar
+   stays as a slim left column.
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .app-body {
+    grid-template-columns: var(--toolbar-width) 1fr;
+    grid-template-rows: 1fr auto;
+  }
+
+  .canvas-area {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .toolbar {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .settings-panel {
+    grid-column: 2;
+    grid-row: 2;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .panel-section {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .panel-actions {
+    margin-top: 0;
+    flex-direction: row;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE — MOBILE
+   Toolbar becomes a horizontal bar pinned to the bottom (thumb-friendly);
+   settings stack vertically below the canvas.
+   ========================================================================== */
+@media (max-width: 639px) {
+  .app-header {
+    padding: 0 var(--space-4);
+  }
+
+  .app-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .canvas-area {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 45vh;
+  }
+
+  /* Toolbar switches from a vertical column to a horizontal row */
+  .toolbar {
+    grid-column: 1;
+    grid-row: 2;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: var(--space-3);
+  }
+
+  .tool-btn {
+    width: auto;
+    flex-direction: row;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .toolbar-divider {
+    width: 1px;
+    height: 32px;
+    margin: 0 var(--space-2);
+  }
+
+  .brush-mini {
+    flex-direction: row;
+    width: auto;
+    min-width: 110px;
+  }
+
+  .settings-panel {
+    grid-column: 1;
+    grid-row: 3;
+    flex-direction: column;
+  }
+
+  .panel-actions {
+    flex-direction: column;
+  }
+}

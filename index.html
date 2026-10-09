@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sketch — A Simple Drawing App</title>
+
+  <!-- Google Fonts: Sora for headings/brand, Inter for everyday UI text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ============ HEADER ============ -->
+    <!-- Holds the brand name + the two actions people reach for constantly: Undo/Redo -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">✎</span>
+        <div class="brand-text">
+          <h1>Sketch</h1>
+          <p>Draw. Undo. Download.</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="undoBtn" class="icon-btn" title="Undo (Ctrl+Z)" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 14 4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Undo</span>
+        </button>
+        <button id="redoBtn" class="icon-btn" title="Redo (Ctrl+Y)" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="m15 14 5-5-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Redo</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main content: toolbar + canvas + settings panel sit side by side on desktop -->
+    <div class="app-body">
+
+      <!-- ============ LEFT TOOLBAR ============ -->
+      <!-- Tool selection (pencil / eraser). On mobile this becomes a horizontal bottom bar. -->
+      <nav class="toolbar" aria-label="Drawing tools">
+        <button id="pencilTool" class="tool-btn active" data-tool="pencil" title="Pencil">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="m14 4 6 6-9 9-6 1 1-6 8-8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Pencil</span>
+        </button>
+
+        <button id="eraserTool" class="tool-btn" data-tool="eraser" title="Eraser">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M17 3 21 7 8 20H5v-3L17 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21H21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Eraser</span>
+        </button>
+
+        <div class="toolbar-divider" aria-hidden="true"></div>
+
+        <!-- Quick brush-size control lives here too, since it's used as often as the tools -->
+        <div class="brush-mini">
+          <label for="brushSizeMini">Size</label>
+          <input type="range" id="brushSizeMini" min="1" max="60" value="6" aria-label="Brush size" />
+        </div>
+      </nav>
+
+      <!-- ============ CANVAS AREA ============ -->
+      <main class="canvas-area">
+        <div class="canvas-card">
+          <canvas id="drawingCanvas"></canvas>
+        </div>
+      </main>
+
+      <!-- ============ RIGHT SETTINGS PANEL ============ -->
+      <aside class="settings-panel" aria-label="Drawing settings">
+
+        <section class="panel-section">
+          <h2>Color</h2>
+          <div class="swatches" id="swatches">
+            <!-- Preset color swatches are generated in JavaScript so they stay easy to edit -->
+          </div>
+          <label class="custom-color-row" for="colorPicker">
+            <span>Custom</span>
+            <input type="color" id="colorPicker" value="#5B5FEF" />
+          </label>
+        </section>
+
+        <section class="panel-section">
+          <h2>Brush size</h2>
+          <div class="brush-size-row">
+            <input type="range" id="brushSize" min="1" max="60" value="6" />
+            <span id="brushSizeLabel" class="brush-size-label">6px</span>
+          </div>
+          <!-- A live preview dot so the person can see the exact stroke thickness -->
+          <div class="brush-preview-wrap">
+            <div id="brushPreview" class="brush-preview"></div>
+          </div>
+        </section>
+
+        <section class="panel-section panel-actions">
+          <button id="clearBtn" class="btn btn-danger">Clear canvas</button>
+          <button id="downloadBtn" class="btn btn-primary">Download PNG</button>
+        </section>
+
+      </aside>
+
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="app-footer">
+      <p>Built with plain HTML, CSS &amp; JavaScript — no frameworks, no libraries.</p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
